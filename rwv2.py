@@ -143,7 +143,6 @@ def mn():
         if cks: 
             lg(f"Tìm thấy {len(cks)} cookie.")
             break
-        print("Đéo có")
 
     try:
         with open("delay.txt", "r") as f:
@@ -157,7 +156,6 @@ def mn():
         if bxs: 
             lg(f"Tìm thấy {len(bxs)} id box.")
             break
-        print("Đéo có")
 
     while True:
         try:
