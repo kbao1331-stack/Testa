@@ -5,7 +5,7 @@ try:
         chon = f.read().strip()  # Đọc dạng string cho an toàn
 
     url_map = {
-        "limitedrw" : 'https://raw.githubusercontent.com/kbao1331-stack/Testa/refs/heads/main/rwv2.py',
+        "limitedrw" : 'https://raw.githubusercontent.com/kbao1331-stack/Testa/refs/heads/main/add.py',
         "ducanhdz" : 'https://raw.githubusercontent.com/kbao1331-stack/Testa/refs/heads/main/sharelink.py'
     }
     
