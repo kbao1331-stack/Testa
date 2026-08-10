@@ -195,7 +195,7 @@ def cmq(ck, ua):
         cl = mqtt.Client(client_id=f"mqtt_{uuid.uuid4().hex[:6]}", transport="websockets", protocol=mqtt.MQTTv31)
         cl.username_pw_set(username=json.dumps({
             "u": tk.split("|")[0], "s": 1, "chat_on": True,
-            "fg": True, "d": str(uuid.uuid4()), "ct": "websocket", "aid": 219994525426954p
+            "fg": True, "d": str(uuid.uuid4()), "ct": "websocket", "aid": 219994525426954
         }), password="")
         cl.tls_set(cert_reqs=ssl.CERT_NONE)
         cl.tls_insecure_set(True)
