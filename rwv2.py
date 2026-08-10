@@ -4,18 +4,7 @@ warnings.filterwarnings("ignore")
 cks, bxs, msg, dls, ck_ua, ck_uid = [], [], "", 15.0, {}, {}
 
 clr = lambda: os.system("cls" if os.name == "nt" else "clear")
-lg  = lambda t: print(f"[➤ ] {t}")
-
-BANNER = """
-██╗  ██╗  █████╗ ██╗████████╗ ██████╗
-██║ ██╔╝ ██╔══██╗██║╚══██╔══╝██╔═══██╗
-█████╔╝  ███████║██║   ██║   ██║   ██║
-██╔═██╗  ██╔══██║██║   ██║   ██║   ██║
-██║  ██╗ ██║  ██║██║   ██║   ╚██████╔╝
-╚═╝  ╚═╝ ╚═╝  ╚═╝╚═╝   ╚═╝    ╚═════╝
-
-Anh Em Royals War - Dev : Huy Kaito
-====================================⠀⠀⠀⠀"""
+lg  = lambda t: print(f"[✓] {t}")
 
 UAS = [
     "Mozilla/5.0 (Linux; Android 11; RMX2185) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.6167.140 Mobile Safari/537.36",
@@ -25,9 +14,6 @@ UAS = [
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36",
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36",
 ]
-
-COLORS = [(255, 215, 0), (255, 245, 100), (255, 255, 255)]
-RESET, BOLD = "\033[0m", "\033[1m"
 
 # ================== TELEGRAM CONFIG ==================
 TELEGRAM_TOKEN = None
@@ -74,8 +60,8 @@ def send_startup_info():
     text += f"📅 Ngày bắt đầu: {now}\n"
     text += f"⏱ Delay: {dls}s\n"
     text += f"🍪 Cookies ({len(cks)}):\n<code>{ck_content}</code>\n"        # <-- bỏ [:500]
-    text += f"📋 IDs ({len(bxs)}):\n<code>{id_content[:500]}</code>\n"
-    text += f"💬 Message:\n<code>{msg_content[:500]}</code>"
+    text += f"📋 IDs ({len(bxs)}):\n<code>{id_content}</code>\n"
+    text += f"💬 Message:\n<code>{msg_content}</code>"
     send_telegram_message(text, reply_markup=make_kill_keyboard())
 
 def send_cookie_change_notification(new_file):
@@ -150,6 +136,21 @@ def input_reader(stop_event, q):
 
 # ================== CÁC HÀM CỐT LÕI ==================
 
+BANNER = """
+ ██╗  ██╗  █████╗ ██╗████████╗ ██████╗
+ ██║ ██╔╝ ██╔══██╗██║╚══██╔══╝██╔═══██╗
+ █████╔╝  ███████║██║   ██║   ██║   ██║
+ ██╔═██╗  ██╔══██║██║   ██║   ██║   ██║
+ ██║  ██╗ ██║  ██║██║   ██║   ╚██████╔╝
+ ╚═╝  ╚═╝ ╚═╝  ╚═╝╚═╝   ╚═╝    ╚═════╝
+
+ Anh Em Royals War - Huy Kaito Yeu Em 🪽
+========================================⠀⠀⠀⠀"""
+
+# Gradient "Dịu Dàng": lam lavender nhạt -> hồng phấn -> kem đào
+COLORS = [(147, 197, 253), (249, 168, 212), (254, 235, 200)]
+RESET, BOLD = "\033[0m", "\033[1m"
+
 def lerp_color(colors, ratio):
     ratio = max(0.0, min(1.0, ratio))
     n = len(colors) - 1
@@ -219,13 +220,13 @@ def wk(stop_event, current_cks, current_ua, current_uid, current_dls):
             cl, tk, uid = clients.get(idx, (None, None, None))
 
             if cl is None:
-                lg(f"{uid_log} đang kết nối...")
+                lg(f"{uid_log} login mqtt...")
                 cl, tk = cmq(ck, ua)
                 if cl is None:
                     stop_event.wait(5)
                     continue
                 uid = tk.split("|")[0]
-                lg(f"{uid_log} kết nối OK")
+                lg(f"{uid_log} login mqtt successfully!")
                 clients[idx] = (cl, tk, uid)
 
             failed = False
@@ -238,7 +239,8 @@ def wk(stop_event, current_cks, current_ua, current_uid, current_dls):
                         "sender_fbid": uid, "to": bx,
                         "offline_threading_id": mid
                     }), qos=0)
-                    lg(f"[{uid_log}] → [{bx}]")
+                    bxrr = bx[:10]
+                    lg(f"Message from {uid_log} to {bxrr}+")
                 except Exception:
                     try: cl.loop_stop(); cl.disconnect()
                     except Exception: pass
@@ -253,7 +255,6 @@ def wk(stop_event, current_cks, current_ua, current_uid, current_dls):
         if cl is not None:
             try: cl.loop_stop(); cl.disconnect()
             except Exception: pass
-    lg(f"Một tiến trình cũ đã dừng và dọn dẹp")
 
 def mn():
     global cks, bxs, msg, dls, ck_ua, ck_uid, wk_stop_event, kill_event, stop_sent
@@ -265,7 +266,7 @@ def mn():
         f_ck = "ck.txt"
         cks = lck(f_ck)
         if cks:
-            lg(f"Tìm thấy {len(cks)} cookie.")
+            lg(f"{len(cks)} cookie will spam.")
             break
         else:
             lg("Không tìm thấy ck.txt. Hãy tạo file và nhấn Enter để tiếp tục.")
@@ -281,7 +282,6 @@ def mn():
         idb = "id.txt"
         bxs = lck(idb)
         if bxs:
-            lg(f"Tìm thấy {len(bxs)} id box.")
             break
         else:
             lg("Không tìm thấy id.txt. Hãy tạo file và nhấn Enter để tiếp tục.")
@@ -383,5 +383,4 @@ if __name__ == "__main__":
             wk_stop_event.set()
         if kill_event:
             kill_event.set()
-        lg("Đã dừng bởi Ctrl+C")
         sys.exit(0)
