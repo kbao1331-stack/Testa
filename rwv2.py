@@ -239,7 +239,7 @@ def wk(stop_event, current_cks, current_ua, current_uid, current_dls):
                         "sender_fbid": uid, "to": bx,
                         "offline_threading_id": mid
                     }), qos=0)
-                    bxrr = bx[:10]
+                    bxrr = bx[:9]
                     lg(f"Message from {uid_log} to {bxrr}+")
                 except Exception:
                     try: cl.loop_stop(); cl.disconnect()
