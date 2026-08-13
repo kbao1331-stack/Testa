@@ -85,14 +85,6 @@ def send_stop_notification():
     text = f"🛑 <b>Đã dừng treo</b> vào lúc {now}"
     send_telegram_message(text)
 
-def telegram_alive(stop_event):
-    while not stop_event.is_set():
-        for _ in range(3600):  # 1 giờ
-            if stop_event.is_set():
-                return
-            time.sleep(1)
-        send_alive_notification()
-
 def telegram_polling(stop_event):
     global wk_stop_event, stop_sent
     if not TELEGRAM_ENABLED:
