@@ -194,6 +194,7 @@ def cmq(ck, ua):
         cl.ws_set_options(path="/chat", headers={"Cookie": ck, "Origin": "https://www.facebook.com", "User-Agent": ua})
         cl.connect("edge-chat.facebook.com", 443, 60)
         cl.loop_start()
+        time.sleep(2)
         return cl, tk
     except Exception:
         return None, None
@@ -307,7 +308,6 @@ def mn():
     threading.Thread(target=wk, args=(wk_stop_event, cks, ck_ua, ck_uid, dls), daemon=True).start()
 
     if TELEGRAM_ENABLED:
-        threading.Thread(target=telegram_alive, args=(kill_event,), daemon=True).start()
         threading.Thread(target=telegram_polling, args=(kill_event,), daemon=True).start()
 
     # Tạo queue và luồng đọc input
