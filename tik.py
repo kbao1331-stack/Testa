@@ -266,6 +266,29 @@ class TClient:
         r = self._req("POST", SEND_URL, headers=headers, params=params, content=payload)
         return cmid
 
+    # ====================== FAKE TYPING (từ tt.py) ======================
+    def send_typing(self, cid, src):
+        dev = get_device(self.cookie)
+        ms = extract_cookie(self.cookie, "msToken")
+        vf = extract_cookie(self.cookie, "s_v_web_id")
+        priv = gen_key()
+        pub = base64.b64encode(pub_point(priv)).decode()
+        url = "/v1/message/typing"
+        dpop = build_dpop(priv, "POST", "https://im-api-sg.tiktok.com/v1/message/typing")
+        inner = (pbs(1, cid) + pbv(2, 2) + pbv(3, src) + pbv(4, 1))
+        payload = (et(1, 0) + ev(130) + et(2, 0) + ev(10014) + pbs(3, "1.6.0") +
+                   et(4, 2) + ev(0) + et(5, 0) + ev(3) + et(6, 0) + ev(1) +
+                   pbb(8, pbb(100, inner)) + pbs(9, dev) + pbs(11, "web") +
+                   build_meta(dev, ms, vf, pub, self.ua) + et(18, 0) + ev(1))
+        headers = {"Accept": "application/x-protobuf", "Content-Type": "application/x-protobuf",
+                   "tt-ticket-guard-public-key": pub, "tt-ticket-guard-version": "2",
+                   "tt-ticket-guard-web-version": "1", "DPoP": dpop}
+        params = {"aid": IM_AID, "version_code": "1.0.0", "app_name": "tiktok_web",
+                  "device_platform": "web_pc", "msToken": ms, "X-Bogus": rand_bogus(),
+                  "ztca-dpop": dpop}
+        # _req sẽ raise nếu không thành công, worker sẽ bắt lỗi
+        self._req("POST", url, headers=headers, params=params, content=payload)
+
 # ======================== MAIN ========================
 def clear():
     os.system("cls" if os.name == "nt" else "clear")
@@ -352,6 +375,9 @@ def main():
         print("Nội dung rỗng.")
         return
 
+    # ===== THÊM LỰA CHỌN TYPING =====
+    typing = input("Typing (y/n): ").strip().lower() == 'y'
+
     try:
         delay = float(input("Nhập delay : ").strip())
     except:
@@ -361,12 +387,19 @@ def main():
     stop_event = threading.Event()
     threads = []
 
-    def worker(client, box, content, delay, stop_event, idx):
+    def worker(client, box, content, delay, stop_event, idx, typing_enabled):
         print(colored(f"Bản quyền tool by Ntan.","cyan"))
         count = 0
         last_gc = time.time()
         while not stop_event.is_set():
             try:
+                # Gửi typing trước nếu được bật
+                if typing_enabled:
+                    try:
+                        client.send_typing(box['id'], box['source_id'])
+                    except Exception:
+                        pass  # lỗi typing không ảnh hưởng đến luồng chính
+
                 client.send(box['id'], box['source_id'], content)
                 count += 1
                 now = datetime.datetime.now().strftime("%H:%M:%S")
@@ -383,7 +416,7 @@ def main():
     for i, ck in enumerate(raw_cookies, 1):
         try:
             cl = TClient(ck)
-            t = threading.Thread(target=worker, args=(cl, selected_box, message, delay, stop_event, i), daemon=True)
+            t = threading.Thread(target=worker, args=(cl, selected_box, message, delay, stop_event, i, typing), daemon=True)
             t.start()
             threads.append(t)
         except Exception as e:
