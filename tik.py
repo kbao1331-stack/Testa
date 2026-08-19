@@ -389,7 +389,6 @@ def main():
         except Exception as e:
             print(f"[Thread {i}] Khởi tạo thất bại: {e}")
 
-    print("\nĐang chạy... Nhấn Enter để dừng.")
     try:
         input()
     except KeyboardInterrupt:
