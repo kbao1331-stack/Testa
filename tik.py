@@ -357,12 +357,11 @@ def main():
     except:
         delay = 10
 
-    # Đã xoá bước xác nhận y/n, bắt đầu chạy ngay
+    print(colored(f"Bản quyền tool by Ntan.","cyan"))
     stop_event = threading.Event()
     threads = []
 
     def worker(client, box, content, delay, stop_event, idx):
-        print(colored(f"Bản quyền tool by Ntan.","cyan"))
         count = 0
         last_gc = time.time()
         while not stop_event.is_set():
@@ -370,7 +369,7 @@ def main():
                 client.send(box['id'], box['source_id'], content)
                 count += 1
                 now = datetime.datetime.now().strftime("%H:%M:%S")
-                print(colored(f"[{now}] C{idx} Message sent successfully. #{count} ", "red"))
+                print(colored(f"[{now}] C{idx} sent successfully. #{count} ", "red"))
             except Exception as e:
                 now = datetime.datetime.now().strftime("%H:%M:%S")
                 print(colored(f"[{now}] C{idx} LỖI: {e}", "blue"))
