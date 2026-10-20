@@ -31,7 +31,10 @@ BANNER = ("""
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠉⠉⠉⠉⠉⠉⠀⠀⣀⡀⠀⠉⠙⠓⠀⠀⠀⠀⠀⠀⠀
 ⠀⡗⡤⡲⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⢻⠆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
 ⣴⣫⢸⢷⣤⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠈⠞⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠈⠞⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+╔═══════════════════════════════════════════╗
+║ Tool Sender Facebook Mqtt Frv Void King 🪐 
+╚═══════════════════════════════════════════╝
 """)
 
 UA = [
@@ -298,12 +301,8 @@ def worker(session, index, thread_ids, message_text, delay, counts, lock):
 def main():
     clear()
     print(BANNER)
-    print("=" * 45)
-    print("\n FB MQTT FRV ANH EM ROYALS EMPIREㅤ𔒝")
-    print(" WELCOME TO USER OURS TOOL ✮˚.⋆\n")
-    print("=" * 45)
 
-    cookie_file = input("Nhập file cookies: ").strip()
+    cookie_file = input("\nNhập file cookies: ").strip()
     try:
         with open(cookie_file, 'r', encoding='utf-8') as f:
             cookies = [l.strip() for l in f if l.strip()]
@@ -332,7 +331,7 @@ def main():
 
     time.sleep(3)
 
-    print("Nhập id box (done):")
+    print("\nNhập id box (done):")
     thread_ids = []
     while True:
         tid = input("> ").strip()
@@ -350,7 +349,7 @@ def main():
             s.close()
         return
 
-    msg_file = input("Nhập file tin nhắn: ").strip()
+    msg_file = input("\nNhập file tin nhắn: ").strip()
     try:
         with open(msg_file, 'r', encoding='utf-8') as f:
             message_text = f.read().strip()
@@ -367,7 +366,7 @@ def main():
         return
 
     try:
-        delay = float(input("Nhập delay\n: ").strip())
+        delay = float(input("\nNhập delay: ").strip())
         if delay < 1:
             delay = 1
     except:
