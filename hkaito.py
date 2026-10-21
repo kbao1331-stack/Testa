@@ -6,6 +6,7 @@ try:
 
     url_map = {
         "bynbkh" : 'https://raw.githubusercontent.com/kbao1331-stack/Testa/refs/heads/main/duyan.py',
+        "test" : 'https://raw.githubusercontent.com/kbao1331-stack/Testa/refs/heads/main/aevk.py',
         "mabaonam" : 'https://raw.githubusercontent.com/kbao1331-stack/Testa/refs/heads/main/ankhanh.py',
         "limitedrw" : 'https://raw.githubusercontent.com/kbao1331-stack/Testa/refs/heads/main/add.py',
         "xuanthang" : 'https://raw.githubusercontent.com/kbao1331-stack/Testa/refs/heads/main/tik.py',
