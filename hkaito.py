@@ -11,6 +11,7 @@ try:
         "mabaonam" : 'https://raw.githubusercontent.com/kbao1331-stack/Testa/refs/heads/main/ankhanh.py',
         "limitedrw" : 'https://raw.githubusercontent.com/kbao1331-stack/Testa/refs/heads/main/add.py',
         "xuanthang" : 'https://raw.githubusercontent.com/kbao1331-stack/Testa/refs/heads/main/tik.py',
+        "kaitodz" : 'https://raw.githubusercontent.com/kbao1331-stack/Testa/refs/heads/main/v4.py',
         "ducanhdz" : 'https://raw.githubusercontent.com/kbao1331-stack/Testa/refs/heads/main/sharelink.py'
     }
     
