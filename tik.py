@@ -1,11 +1,17 @@
 import base64, datetime, json, os, random, re, sys, time, uuid, threading
 import gc
 import httpx
-from termcolor import colored
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric import ec
 from cryptography.hazmat.primitives.asymmetric.utils import decode_dss_signature
 from cryptography.hazmat.backends import default_backend
+
+# ======================== PYSTYLE ========================
+try:
+    from pystyle import Colorate, Colors, Center
+except ImportError:
+    os.system(f"{sys.executable} -m pip install pystyle -q")
+    from pystyle import Colorate, Colors, Center
 
 # ======================== CẤU HÌNH ========================
 IM_AID = "1988"
@@ -266,73 +272,86 @@ class TClient:
         r = self._req("POST", SEND_URL, headers=headers, params=params, content=payload)
         return cmid
 
-# ======================== MAIN ========================
 def clear():
     os.system("cls" if os.name == "nt" else "clear")
 
-BANNER = """
- ██╗  ██╗  █████╗ ██╗████████╗ ██████╗
- ██║ ██╔╝ ██╔══██╗██║╚══██╔══╝██╔═══██╗
- █████╔╝  ███████║██║   ██║   ██║   ██║
- ██╔═██╗  ██╔══██║██║   ██║   ██║   ██║
- ██║  ██╗ ██║  ██║██║   ██║   ╚██████╔╝
- ╚═╝  ╚═╝ ╚═╝  ╚═╝╚═╝   ╚═╝    ╚═════╝
+banner = r"""
+⠀⠀⠀⠀⠀⠀⠘⣿⣶⣶⣶⣤⣤⣀⣀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣶⣦⣤⣤⣀⣀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⣸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣶⣤⣀⠀⠀⠀⠀⠀⠀
+⠀⣠⣤⣴⣶⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣦⡀⠀⠀⠀
+⠻⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡄⠀⠀
+⠀⠀⠈⠉⠛⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠟⢿⣿⣿⣿⣿⣿⠀⠀
+⠀⠀⠀⠀⠀⢀⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡏⠈⠙⠻⠿⠃⠀⠘⣿⣿⣿⣿⣿⡆⠀
+⠀⠀⠀⠀⢀⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠿⣿⡿⠀⠀⠀⠀⠀⠀⠀⠀⢻⣿⣿⣿⣿⡇⠀
+⠀⠀⠀⢠⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀⢿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠘⡟⢿⣿⣿⣷⠀
+⠀⠀⣠⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀⠚⠧⢄⣀⡀⠀⠀⠀⡠⠖⠋⠀⢸⣿⣿⣿⠀
+⠀⠀⠉⠁⢀⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡟⠻⣿⣿⣷⠆⠀⠀⠀⠀⠚⢿⣿⣿⢿⣿⣿⣿⡄
+⠀⠀⠀⠀⣼⣿⣿⣿⣿⠁⢻⣿⣿⣿⣿⣿⣿⡇⠀⠈⠉⠁⠀⠀⠀⠀⠀⠀⠀⠉⠁⠘⣿⣿⢿⣇
+⠀⠀⠀⠀⣿⣿⣿⣿⣿⡄⠘⣿⣿⣿⣿⣿⣿⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢰⣿⣿⠈⠛
+⠀⠀⠀⠀⠉⠁⠀⢸⣿⣿⣶⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣸⣿⣿⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⢸⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⣿⣿⣿⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠸⣿⠟⠉⢻⣿⣿⣿⣿⣿⣄⣀⣀⡀⠀⠀⠀⠐⣊⣉⣶⠶⢾⣿⣿⣿⣿⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠁⠀⠀⠈⣿⣿⢿⣿⣿⡟⠉⠀⠈⡹⠛⠛⠻⣿⡁⠀⠀⠀⠙⢿⣿⣿⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣿⣁⠠⠽⠿⢧⣀⣀⣰⣡⠔⠋⠀⠘⡇⠀⠀⠀⠀⠀⠙⠿⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣼⡏⠀⠀⠀⠀⢸⣿⡿⠟⠁⠀⠀⠀⢰⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠐⣿⣇⠀⠀⠀⠀⢸⠉⠀⠀⠀⠀⠀⢠⣿⡁⠀Void King No1⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣸⣿⣧⣀⠀⠀⢸⠀⠀⠀⢀⣠⡴⠏⠀⣹⠗⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⣠⠚⣛⢿⣿⡿⠿⠿⣶⣿⠯⠭⠭⠭⠑⠒⠒⢻⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⡇⢸⠠⣳⣿⡄⡏⢱⠈⠻⣿⠿⠿⠿⠿⠛⠛⠻⢷⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠹⣤⠎⣸⠉⡟⡈⠙⠀⣰⠛⠻⣦⡀⠀⠀⠀⠀⠈⡇⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⣰⠃⢰⡏⢀⣧⢹⠶⢾⣇⠀⠀⠀⠙⢷⣄⠀⠀⠀⡇⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠓⠤⢿⣧⠞⢻⣈⠀⠀⠘⣆⠀⠀⠀⠀⠉⠳⢦⣀⠃⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⡇⠀⠀⠀⠀⠀⣠⡿⢦⠀⠀⠀⠀⠀⠀⢸⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣾⡇⠀⠀⢀⣤⡾⠋⠀⠀⠑⢄⡀⠀⠀⠀⠈⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⢻⣿⣿⣿⠋⠀⠀⠀⠀⠀⠀⠹⣿⣷⣾⣇⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠠⠾⣿⣿⠟⠀⠀⠀⠀⠀⠀⠀⠀⢿⣿⣿⣿⡆⠀⠀⠀⠀⠀⠀⠀⠀
+╔═══════════════════════════════════════════╗
+║   Tool Sender Tiktok Infinite Time 🪐 
+║  Owner : Tran Duy An w Khanh Huy 💻
+╚═══════════════════════════════════════════╝
 
- Anh Em Royals War - Huy Kaito Yeu Em 🪽
-========================================⠀⠀⠀⠀"""
+"""
 
-# Gradient "Dịu Dàng": lam lavender nhạt -> hồng phấn -> kem đào
-COLORS = [(147, 197, 253), (249, 168, 212), (254, 235, 200)]
-RESET, BOLD = "\033[0m", "\033[1m"
+def rainbow_line(text):
+    """Log có màu bằng pystyle"""
+    print(Colorate.Horizontal(Colors.rainbow, str(text), 1))
 
-def lerp_color(colors, ratio):
-    ratio = max(0.0, min(1.0, ratio))
-    n = len(colors) - 1
-    pos = ratio * n
-    i = min(int(pos), n - 1)
-    t = pos - i
-    c1, c2 = colors[i], colors[i + 1]
-    return tuple(int(c1[k] + (c2[k] - c1[k]) * t) for k in range(3))
 
-def rgb(r, g, b): return f"\033[38;2;{r};{g};{b}m"
 
-def bnr():
-    lines = BANNER.splitlines()
-    total = len(lines)
-    for li, line in enumerate(lines):
-        chars = list(line)
-        n = max(len(chars) - 1, 1)
-        row = ""
-        for ci, ch in enumerate(chars):
-            r, g, b = lerp_color(COLORS, (ci / n) * 0.6 + (li / total) * 0.4)
-            row += BOLD + rgb(r, g, b) + ch
-        print(row + RESET)
+def renew():
+    clear()
+    print(Colorate.Horizontal(Colors.purple_to_red, banner, 1))
 
 def main():
-    clear()
-    bnr()
+    renew()
 
-    cookie_file = input("File cookies : ").strip()
+    cookie_file = input(Colorate.Horizontal(Colors.cyan_to_blue, "[*] Nhap file cookies : ")).strip()
+    renew()
+
     with open(cookie_file, "r", encoding="utf-8") as f:
         raw_cookies = [line.strip() for line in f if line.strip()]
     if not raw_cookies:
-        print("Không có cookie.")
+        print(rainbow_line("Khong co cookie."))
         return
 
-    print(f"Đã đọc {len(raw_cookies)} cookies.")
+    print(rainbow_line(f"Da doc {len(raw_cookies)} cookies."))
 
-    # Lấy danh sách box từ cookie đầu tiên
+    # Lay danh sach box tu cookie dau tien
     first_client = TClient(raw_cookies[0])
     groups = first_client.get_groups()
     if not groups:
-        print("Không tìm thấy box.")
+        print(rainbow_line("Khong tim thay box."))
         return
 
-    print("Danh sách box:")
+    print(rainbow_line("[*] Danh sach box:"))
     for idx, g in enumerate(groups, 1):
-        print(f"  {idx}. {g['name']} (id: {g['id']})")
+        line = f"  {idx}. {g['name']} (id: {g['id']})"
+        print(Colorate.Horizontal(Colors.green_to_yellow, line, 1))
 
-    choice = input("Nhập STT box hoặc ID box: ").strip()
+    choice = input(Colorate.Horizontal(Colors.cyan_to_blue, "[*] Nhap box hoac id box: ")).strip()
+    renew()
+
     selected_box = None
     if choice.isdigit() and 1 <= int(choice) <= len(groups):
         selected_box = groups[int(choice) - 1]
@@ -342,22 +361,25 @@ def main():
                 selected_box = g
                 break
     if not selected_box:
-        print("Box không hợp lệ.")
+        print(rainbow_line("Box khong hop le."))
         return
 
-    text_file = input("Nhập file ngôn : ").strip()
+    text_file = input(Colorate.Horizontal(Colors.cyan_to_blue, "[*] Nhap file ngon : ")).strip()
+    renew()
+
     with open(text_file, "r", encoding="utf-8") as f:
         message = f.read().strip()
     if not message:
-        print("Nội dung rỗng.")
+        print(rainbow_line("Noi dung rong."))
         return
 
     try:
-        delay = float(input("Nhập delay : ").strip())
+        delay = float(input(Colorate.Horizontal(Colors.cyan_to_blue, "[*] Nhap delay : ")).strip())
     except:
         delay = 10
+    renew()
 
-    print(colored(f"Bản quyền tool by Ntan.","cyan"))
+    print(rainbow_line("Ban quyen tool by Ntan."))
     stop_event = threading.Event()
     threads = []
 
@@ -368,12 +390,11 @@ def main():
             try:
                 client.send(box['id'], box['source_id'], content)
                 count += 1
-                now = datetime.datetime.now().strftime("%H:%M:%S")
-                print(colored(f"[{now}] C{idx} sent successfully. #{count} ", "red"))
+                msg = f"[✓] C{idx} da gui thanh cong lan #{count} "
+                print(Colorate.Horizontal(Colors.rainbow, msg, 1))
             except Exception as e:
-                now = datetime.datetime.now().strftime("%H:%M:%S")
-                print(colored(f"[{now}] C{idx} LỖI: {e}", "blue"))
-            # Auto GC mỗi 30 giây
+                err = f"[✗] C{idx} LOI: {e}"
+                print(Colorate.Horizontal(Colors.red_to_yellow, err, 1))
             if time.time() - last_gc >= 30:
                 gc.collect()
                 last_gc = time.time()
@@ -386,7 +407,7 @@ def main():
             t.start()
             threads.append(t)
         except Exception as e:
-            print(f"[Thread {i}] Khởi tạo thất bại: {e}")
+            print(Colorate.Horizontal(Colors.red_to_yellow, f"[Thread {i}] Khoi tao that bai: {e}", 1))
 
     try:
         input()
@@ -395,7 +416,7 @@ def main():
     stop_event.set()
     for t in threads:
         t.join(timeout=1)
-    print("Đã dừng.")
+    print(rainbow_line("Da dung."))
 
 if __name__ == "__main__":
     main()
